@@ -1,0 +1,9 @@
+if(colorRojo>=18 && colorRojo<=28 && colorVerde>=36 && colorVerde<=39 && colorAzul<=36 && colorAzul>=38){
+      Serial.println(" - Detectado ROJO");
+  }
+  if(colorVerde > colorRojo && colorVerde > colorAzul){
+    Serial.println(" - Detectado VERDE");
+  }
+  if(colorAzul > colorRojo && colorAzul > colorVerde){
+    Serial.println(" - Detectado AZUL");
+  }

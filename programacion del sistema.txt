@@ -1,0 +1,86 @@
+#include <Servo.h>
+
+// declarar los pines para el sensor TCS3200
+const int s0Pin = 1;
+const int s1Pin = 13;
+const int s2Pin = 10;
+const int s3Pin = 7;
+const int outPin = 9;
+
+// declarar los pines para los servos
+const int servo1Pin = 3;
+const int servo2Pin = 5;
+const int servo3Pin = 6;
+
+// declarar objetos para los servos
+Servo servo1;
+Servo servo2;
+Servo servo3;
+
+void setup() {
+  // configurar los pines del sensor TCS3200 como salidas
+  pinMode(s0Pin, OUTPUT);
+  pinMode(s1Pin, OUTPUT);
+  pinMode(s2Pin, OUTPUT);
+  pinMode(s3Pin, OUTPUT);
+  pinMode(outPin, INPUT);
+
+  // configurar los pines de los servos como salidas
+  servo1.attach(servo1Pin);
+  servo2.attach(servo2Pin);
+  servo3.attach(servo3Pin);
+
+  // configurar el sensor TCS3200 para detectar colores
+  digitalWrite(s0Pin, HIGH);
+  digitalWrite(s1Pin, HIGH);
+
+  // mover servo1 y servo2 a sus posiciones iniciales
+  servo1.write(90);
+  servo2.write(180);
+}
+
+void loop() {
+  // configurar el sensor TCS3200 para detectar azul
+  digitalWrite(s2Pin, LOW);
+  digitalWrite(s3Pin, HIGH);
+  int redFrequency = getFrequency();
+  digitalWrite(s2Pin, HIGH);
+  digitalWrite(s3Pin, LOW);
+  int greenFrequency = getFrequency();
+  digitalWrite(s2Pin, LOW);
+  digitalWrite(s3Pin, LOW);
+  int blueFrequency = getFrequency();
+  digitalWrite(s2Pin, HIGH);
+  digitalWrite(s3Pin, HIGH);
+
+  // mover servo3 en función del color detectado
+  if (redFrequency >= 18 && redFrequency <= 25 && greenFrequency >= 27 && greenFrequency <= 31 && blueFrequency >= 21 && blueFrequency <= 24) {
+    servo3.write(120);
+  } else if (redFrequency >= 16 && redFrequency <= 25 && greenFrequency >= 24 && greenFrequency <= 29 && blueFrequency >= 18 && blueFrequency <= 20) {
+    servo3.write(180);
+  } else if (redFrequency >= 13 && redFrequency <= 16 && greenFrequency >= 18 && greenFrequency <= 21 && blueFrequency >= 18 && blueFrequency <= 21) {
+    servo3.write(160);
+  } else if (redFrequency >= 19 && redFrequency <= 27 && greenFrequency >= 24 && greenFrequency <= 27 && blueFrequency >= 20 && blueFrequency <= 24) {
+    servo3.write(140);
+  }
+
+  // mover servo1 y servo2
+  servo1.write(90);
+  servo2.write(180);
+  delay(170);
+  servo1.write(180);
+  servo2.write(90);
+  delay(170);
+
+  // esperar 2 segundos antes de repetir el bucle
+  delay(3000);
+}
+
+int getFrequency() {
+  // obtener la frecuencia del color detectado por el sensor TCS3200
+  int frequency = 0;
+  for (int i = 0; i < 10; i++) {
+    frequency += pulseIn(outPin, LOW);
+  }
+  return frequency / 10;
+}
